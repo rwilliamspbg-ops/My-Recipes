@@ -31,14 +31,14 @@ jobs:
           fi
 
       - name: Build (if present)
-run: |
+        run: |
           if grep -q '"build"' package.json; then
             npm run build
           else
             echo "No build script found, skipping build step"
           fi
       - name: Test (if present)
-run: |
+        run: |
           if grep -q '"test"' package.json; then
             npm test
           else
