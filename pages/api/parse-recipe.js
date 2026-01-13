@@ -11,7 +11,7 @@ const openai = new OpenAI({
 
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: false, // Disables automatic parsing so you can read the file stream
   },
 };
 
