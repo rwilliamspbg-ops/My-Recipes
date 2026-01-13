@@ -7,37 +7,40 @@ export default function Upload() {
   const [message, setMessage] = useState('');
 
 const handleSubmit = async (e) => {
-  e.preventDefault();
-  setUploading(true);
-  setMessage('');
+    e.preventDefault();
+    setUploading(true);
+    setMessage('');
 
-  const formData = new FormData(e.target);
-  const file = formData.get('recipeFile'); // Ensure your input name matches this
+    const formData = new FormData(e.target);
+    const file = formData.get('recipeFile');
 
-  try {
-    const response = await fetch('/api/parse-recipe', {
-      method: 'POST',
-      body: file,
-      headers: {
-        'Content-Type': 'application/pdf',
-      },
-    });
+    try {
+      const response = await fetch('/api/parse-recipe', {
+        method: 'POST',
+        body: file,
+        headers: {
+          'Content-Type': 'application/pdf',
+        },
+      });
 
-    if (!response.ok) throw new Error('Failed to parse recipe');
+      if (!response.ok) throw new Error('Failed to parse recipe');
 
-    const recipeData = await response.json();
-    setMessage('Recipe parsed successfully!');
-    
-    // Example: Redirect to the new recipe page or populate a form
-    console.log('Parsed Data:', recipeData);
-    
-  } catch (error) {
-    console.error(error);
-    setMessage('Error parsing PDF. Please try again.');
-  } finally {
-    setUploading(false);
-  }
-};
+      const recipeData = await response.json();
+      
+      // Update the UI message
+      setMessage('Recipe parsed successfully!');
+      
+      // LOGIC TO INSERT: Use recipeData to update your form state here
+      // Example: setTitle(recipeData.title);
+      
+      console.log('Parsed Data:', recipeData);
+    } catch (error) {
+      console.error(error);
+      setMessage('Error parsing PDF. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <>
