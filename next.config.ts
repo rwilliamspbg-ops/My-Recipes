@@ -1,10 +1,15 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  webpack: (config) => {
-    config.resolve.fallback = { fs: false, path: false, canvas: false };
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  webpack: (config, { isServer }) => {
+    config.resolve.fallback = { 
+      fs: false, 
+      path: false, 
+      canvas: false 
+    };
     return config;
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
 
