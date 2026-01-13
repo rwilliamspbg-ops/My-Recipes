@@ -9,20 +9,25 @@ export default function RecipeDetail() {
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (id) fetchRecipe();
-  }, [id]);
+useEffect(() => {
+    if (!id) return;
 
-  const fetchRecipe = async () => {
-    try {
-      const response = await fetch(`/api/recipes/${id}`);
-      if (response.ok) setRecipe(await response.json());
-    } catch (error) {
-      console.error('Failed to fetch recipe:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchRecipe = async () => {
+      try {
+        const response = await fetch(`/api/recipes/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setRecipe(data);
+        }
+      } catch (_error) {
+        console.error('Failed to fetch recipe');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecipe();
+  }, [id]); // Include id as a dependency
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-500"></div></div>;
   if (!recipe) return <div className="min-h-screen flex items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold text-gray-800 mb-4">Recipe not found</h1><Link href="/"><button className="px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold rounded-lg">Back to Home</button></Link></div></div>;
