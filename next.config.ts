@@ -1,9 +1,8 @@
 import type { NextConfig } from 'next';
 
-const nextConfig = {
-  // Add this line to prevent Next.js from bundling the library
+const nextConfig: NextConfig = {
   serverExternalPackages: ["pdf-parse"],
-  webpack: (config, { isServer }) => {
+  webpack: (config: any, { isServer }) => {
     config.resolve.fallback = { 
       fs: false, 
       path: false, 
@@ -14,5 +13,3 @@ const nextConfig = {
 };
 
 export default nextConfig;
-
-
