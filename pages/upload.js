@@ -6,19 +6,38 @@ export default function Upload() {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setUploading(true);
-    setMessage('');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setUploading(true);
+  setMessage('');
 
-    const formData = new FormData(e.target);
+  const formData = new FormData(e.target);
+  const file = formData.get('recipeFile'); // Ensure your input name matches this
+
+  try {
+    const response = await fetch('/api/parse-recipe', {
+      method: 'POST',
+      body: file,
+      headers: {
+        'Content-Type': 'application/pdf',
+      },
+    });
+
+    if (!response.ok) throw new Error('Failed to parse recipe');
+
+    const recipeData = await response.json();
+    setMessage('Recipe parsed successfully!');
     
-    // For now, just show a message since we need PDF parsing setup
-    setTimeout(() => {
-      setUploading(false);
-      setMessage('Upload functionality requires PDF parsing setup. Please configure OpenAI API and upload endpoint.');
-    }, 1000);
-  };
+    // Example: Redirect to the new recipe page or populate a form
+    console.log('Parsed Data:', recipeData);
+    
+  } catch (error) {
+    console.error(error);
+    setMessage('Error parsing PDF. Please try again.');
+  } finally {
+    setUploading(false);
+  }
+};
 
   return (
     <>
