@@ -20,8 +20,11 @@ export default async function handler(req, res) {
 
   try {
     const chunks = [];
-    for await (const chunk of req) { chunks.push(chunk); }
-    const buffer = Buffer.concat(chunks);
+for await (const chunk of req) {
+  chunks.push(chunk);
+}
+const buffer = Buffer.concat(chunks);
+const data = await pdf(buffer); // Use the buffer here
 
     // Call the required module directly
     const pdfData = await pdf(buffer);
