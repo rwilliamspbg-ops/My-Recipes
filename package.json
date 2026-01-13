@@ -28,13 +28,15 @@
     "drizzle-kit": "^0.31.8",
     "eslint": "^9.39.1",
     "eslint-config-next": "^15.5.7",
-    "tailwindcss": "^4.1.17",
-    "typescript": "^5.9.3",
+"tailwindcss": "^4.1.17",
+    "typescript": "^5.9.3"
   },
   "eslintConfig": {
     "rules": {
       "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }]
     }
   }
+}
+
 
 
