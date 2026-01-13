@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         title: 'Sample Recipe',
         message: 'Database connection needed' 
       });
-    } catch (error) {
+    } catch (_error) {
       return res.status(500).json({ error: 'Failed to fetch recipe' });
     }
   }
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         success: true,
         message: `Recipe ${id} deleted successfully` 
       });
-    } catch (error) {
+    } catch (_error) {
       return res.status(500).json({ error: 'Failed to delete recipe' });
     }
   }
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         ...recipeData,
         message: 'Recipe updated successfully' 
       });
-    } catch (error) {
+    } catch (_error) {
       return res.status(500).json({ error: 'Failed to update recipe' });
     }
   }
