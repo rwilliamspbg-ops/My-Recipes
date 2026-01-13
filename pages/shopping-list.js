@@ -7,24 +7,25 @@ export default function ShoppingList() {
   const [shoppingList, setShoppingList] = useState([]);
   const [loading, setLoading] = useState(true);
 
+// 1. Move fetchRecipes inside useEffect to satisfy dependency rules
   useEffect(() => {
-    fetchRecipes();
-  }, []);
-
-  const fetchRecipes = async () => {
-    try {
-      const response = await fetch('/api/recipes');
-      if (response.ok) {
-        const data = await response.json();
-        setRecipes(data);
-        generateShoppingList(data);
+    const fetchRecipes = async () => {
+      try {
+        const response = await fetch('/api/recipes');
+        if (response.ok) {
+          const data = await response.json();
+          setRecipes(data);
+          generateShoppingList(data);
+        }
+      } catch (_error) { // 2. Use _error to silence unused variable warning
+        console.error('Failed to fetch recipes');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Failed to fetch recipes:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    fetchRecipes();
+  }, []); // Dependency array is now safely empty
 
   const generateShoppingList = (recipesData) => {
     const ingredientsMap = {};
