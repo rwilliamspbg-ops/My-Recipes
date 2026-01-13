@@ -1,28 +1,22 @@
 import OpenAI from 'openai';
-const pdf = require('pdf-parse'); // Specific import for Next.js compatibility
+// Remove the require line from the top
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export const config = {
-  api: {
-    bodyParser: false, // Disabling bodyParser to handle raw binary data (PDF)
-  },
-};
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
-    // 1. Get the PDF data from the request
+    // 1. Dynamically import pdf-parse only when needed
+    const pdf = (await import('pdf-parse')).default; 
+
     const chunks = [];
-    for await (const chunk of req) {
-      chunks.push(chunk);
-    }
+    for await (const chunk of req) { chunks.push(chunk); }
     const buffer = Buffer.concat(chunks);
 
-    // 2. Extract text from the PDF
+    // 2. Use the dynamically imported function
     const pdfData = await pdf(buffer);
     const extractedText = pdfData.text;
 
