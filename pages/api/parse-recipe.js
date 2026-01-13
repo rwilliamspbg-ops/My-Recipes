@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import pdf from 'pdf-parse/lib/pdf-parse'; // Specific import for Next.js compatibility
+import pdf from 'pdf-parse'; // Specific import for Next.js compatibility
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
