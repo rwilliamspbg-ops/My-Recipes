@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       // This would normally fetch from your database
       // For now, return an empty array
       return res.status(200).json([]);
-    } catch (error) {
+    } catch (_error) {
       return res.status(500).json({ error: 'Failed to fetch recipes' });
     }
   }
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
         id: Date.now(), 
         ...recipeData 
       });
-    } catch (error) {
+    } catch (_error) {
       return res.status(500).json({ error: 'Failed to create recipe' });
     }
   }
