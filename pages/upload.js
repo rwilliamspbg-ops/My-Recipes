@@ -1,15 +1,20 @@
 import { useState } from 'react';
 import Link from 'next/link';
-import Head from 'next/head';
 
-export default function Upload() {
+export default function UploadRecipe() {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
+  
+  // State for parsed recipe data
+  const [title, setTitle] = useState('');
+  const [ingredients, setIngredients] = useState('');
+  const [instructions, setInstructions] = useState('');
+  const [prepTime, setPrepTime] = useState('');
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
-    setMessage('');
+    setMessage('Parsing PDF with AI...');
 
     const formData = new FormData(e.target);
     const file = formData.get('recipeFile');
@@ -18,96 +23,63 @@ const handleSubmit = async (e) => {
       const response = await fetch('/api/parse-recipe', {
         method: 'POST',
         body: file,
-        headers: {
-          'Content-Type': 'application/pdf',
-        },
+        headers: { 'Content-Type': 'application/pdf' },
       });
 
       if (!response.ok) throw new Error('Failed to parse recipe');
 
-      const recipeData = await response.json();
+      const data = await response.json();
       
-      // Update the UI message
-      setMessage('Recipe parsed successfully!');
+      // Auto-fill the form fields with parsed data
+      setTitle(data.title || '');
+      setIngredients(Array.isArray(data.ingredients) ? data.ingredients.join('\n') : data.ingredients || '');
+      setInstructions(Array.isArray(data.instructions) ? data.instructions.join('\n') : data.instructions || '');
+      setPrepTime(data.prepTime || '');
       
-      // LOGIC TO INSERT: Use recipeData to update your form state here
-      // Example: setTitle(recipeData.title);
-      
-      console.log('Parsed Data:', recipeData);
-    } catch (error) {
-      console.error(error);
-      setMessage('Error parsing PDF. Please try again.');
+      setMessage('Success! Please review the details below.');
+    } catch (_error) {
+      console.error(_error);
+      setMessage('Error parsing PDF. You can still enter details manually.');
     } finally {
       setUploading(false);
     }
   };
 
   return (
-    <>
-      <Head>
-        <title>Upload Recipe | My Recipe Cookbook</title>
-      </Head>
+    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+      <h1>📤 Upload Recipe</h1>
+      <Link href="/">← Back to Home</Link>
       
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50">
-        {/* Header */}
-        <header className="bg-white shadow-md">
-          <div className="max-w-4xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-pink-500 bg-clip-text text-transparent">
-                📤 Upload Recipe
-              </h1>
-              <Link href="/">
-                <button className="px-4 py-2 text-gray-600 hover:text-gray-800 font-semibold">
-                  ← Back to Home
-                </button>
-              </Link>
-            </div>
-          </div>
-        </header>
+      <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+        <div style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ccc' }}>
+          <h3>Step 1: Upload PDF</h3>
+          <input type="file" name="recipeFile" accept="application/pdf" required />
+          <button type="submit" disabled={uploading} style={{ marginLeft: '10px' }}>
+            {uploading ? 'Processing...' : 'Parse with AI'}
+          </button>
+        </div>
 
-        {/* Main Content */}
-        <main className="max-w-2xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Upload a Recipe PDF</h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Recipe PDF File
-                </label>
-                <input
-                  type="file"
-                  name="file"
-                  accept=".pdf"
-                  required
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
-                />
-              </div>
+        {message && <p style={{ color: message.includes('Error') ? 'red' : 'green' }}>{message}</p>}
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-800">
-                  <strong>Note:</strong> This feature requires backend configuration with OpenAI API for PDF parsing.
-                  The upload functionality will be available once the backend is properly set up.
-                </p>
-              </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <h3>Step 2: Review & Save</h3>
+          <label>Recipe Title</label>
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Grandma's Apple Pie" />
 
-              <button
-                type="submit"
-                disabled={uploading}
-                className="w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {uploading ? 'Uploading...' : 'Upload Recipe'}
-              </button>
-            </form>
+          <label>Prep Time</label>
+          <input type="text" value={prepTime} onChange={(e) => setPrepTime(e.target.value)} placeholder="e.g. 45 mins" />
 
-            {message && (
-              <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-yellow-800">{message}</p>
-              </div>
-            )}
-          </div>
-        </main>
-      </div>
-    </>
+          <label>Ingredients (one per line)</label>
+          <textarea rows="6" value={ingredients} onChange={(e) => setIngredients(e.target.value)} />
+
+          <label>Instructions</label>
+          <textarea rows="6" value={instructions} onChange={(e) => setInstructions(e.target.value)} />
+
+          <button type="button" onClick={() => alert('Save to DB logic goes here!')} style={{ marginTop: '20px', padding: '10px', background: '#0070f3', color: 'white', border: 'none', borderRadius: '5px' }}>
+            Save to Cookbook
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
