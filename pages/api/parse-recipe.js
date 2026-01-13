@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 
 // This specific syntax avoids both the "not a function" runtime error 
 // and the "require is forbidden" build error.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const pdf = require('pdf-parse');
 
 const openai = new OpenAI({
